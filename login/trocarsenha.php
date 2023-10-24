@@ -1,0 +1,215 @@
+<?php
+session_start();
+
+include('../db_conexao/db_connect.php'); // Inclui o arquivo de conexão
+
+// Verifica se o usuário está autenticado
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+if (isset($_SESSION['senha_incorreta']) && $_SESSION['senha_incorreta'] === true) {
+    // Mostra o modal de confirmação
+    echo '<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const modal = document.getElementById("small-modal");
+            if (modal) {
+                modal.classList.remove("hidden");
+            }
+        });
+    </script>';
+    
+    // Limpa a variável de sessão após mostrar o modal
+    $_SESSION['senha_incorreta'] = false;
+}
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alterar Senha | WISETECH</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+<link rel="manifest" href="../assets/site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+    screens: {
+      sm: '640px',
+      // => @media (min-width: 640px) { ... }
+
+      md: '768px',
+      // => @media (min-width: 768px) { ... }
+
+      lg: '1024px',
+      // => @media (min-width: 1024px) { ... }
+
+      xl: '1280px',
+      // => @media (min-width: 1280px) { ... }
+
+      '2xl': '1536px',
+      // => @media (min-width: 1536px) { ... }
+    },
+    fontFamily: {
+      'sans': ['ui-sans-serif', 'system-ui',],
+      'serif': ['ui-serif', 'Georgia',],
+      'mono': ['ui-monospace', 'SFMono-Regular',],
+    },
+     extend: {
+      colors: {
+        principal: '#312553',
+        cinza: '#DADADA',
+      },
+     },
+    },
+  }
+  </script>
+</head>
+<body>
+  <nav class="bg-principal border-gray-200">
+  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <a href="./index.php" class="flex items-center">
+         <img class='w-40' src='../assets/logobranca.png' alt="" />
+    </a>
+    <button data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-white       rounded-lg md:hidden focus:outline-none" aria-controls="navbar-default" aria-expanded="false">
+        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+        </svg>
+    </button>
+    <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+      <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg  md:flex-row md:space-x-8 md:mt-0 md:border-0">
+        <li>
+          <form action="../admin.php" method="post">
+          <button class="font-bold block py-4 px-2 text-white rounded-lg hover:bg- md:hover:bg-white md:border border hover:bg-white transition duration-700 hover:text-principal md:px-2 md:py-2 dark:text-white mb-4 text-center md:mb-0 " type="submit">VOLTAR</button>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<section>
+  <div class="mt-8 p-6">
+    <div class="max-w-md mx-auto bg-white rounded p-6">
+        <h2 class="text-2xl font-bold mb-4">Alterar Senha</h2>
+        <form action="./processar_trocasenha.php" method="POST">
+            <div class="mb-4">
+                <label for="senha_atual" class="block font-medium">Senha Atual:</label>
+                <input type="password" id="senha_atual" name="senha_atual" class="border rounded w-full p-2" required>
+            </div>
+            <div class="mb-4">
+                <label for "nova_senha" class="block font-medium">Nova Senha:</label>
+                <input type="password" id="nova_senha" name="nova_senha" class="border rounded w-full p-2" required>
+            </div>
+            <button type="submit" class="bg-principal text-white font-medium p-2 rounded">Alterar Senha</button>
+        </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class='w-full mt-24 bg-principal text-gray-300 py-y px-2'>
+        <div class='max-w-[1240px] mx-auto grid grid-cols-2 md:grid-cols-6 border-b-2 border-gray-600 py-8'>
+            <div>
+                <h6 class='font-bold uppercase pt-2'>SOLUÇÕES</h6>
+                <ul>
+                    <li class='py-1'>Sistemas</li>
+                </ul>
+            </div>
+            <div>
+                <h6 class='font-bold uppercase pt-2'>SUPORTE</h6>
+                <ul>
+                    <li class='py-1'>Preços</li>
+                </ul>
+            </div>
+            <div>
+                <h6 class='font-bold uppercase pt-2'>EMPRESA</h6>
+                <ul>
+                    <li class='py-1'>Sobre</li>
+                </ul>
+            </div>
+            <div>
+                <h6 class='font-bold uppercase pt-2'>TERMOS</h6>
+                <ul>
+                    <li class='py-1'>Termos</li>
+                </ul>
+            </div>
+            <div class='col-span-2 pt-8 md:pt-2'>
+                <p class='font-bold uppercase'>Se inscreva na nossa newsletter</p>
+                <p class='py-4'>As ultimas atualizações da nossa empresa, disponível na sua caixa de email semanalmente.</p>
+                <form class='flex flex-col sm:flex-row'>
+                    <input class='w-full p-2 mr-4 rounded-md mb-4' type="email" placeholder='Email...'/>
+                    <button class='p-2 mb-4 bg-transparent hover:bg-white cursor-pointer rounded-lg text-white font-bold hover:text-principal border border-white hover:border-transparent transition duration-700 text-center'>INSCREVER</button>
+                </form>
+            </div>
+        </div>
+
+        <div class='flex flex-col max-w-[1240px] px-2 py-4 mx-auto justify-between sm:flex-row text-center text-gray-500'>
+        <p class='py-4'>2023 Kauã Tiezzi, Todos direitos reservados.</p>
+        <div class='flex justify-between sm:w-[300px] pt-4 text-2xl'>
+          <a href=""><img src="../assets/facebook.svg" class="w-6 h-6" alt=""></a>
+          <a href=""><img src="../assets/instagram.svg" class="w-6 h-6" alt=""></a>
+          <a href=""><img src="../assets/x.svg" class="w-6 h-6" alt=""></a>
+          <a href=""><img src="../assets/github.svg" class="w-6 h-6" alt=""></a>
+        </div>
+        </div>
+    </div>
+</footer>
+
+<div id="small-modal" tabindex="-1" class="fixed inset-0 z-50 hidden overflow-x-hidden overflow-y-auto modal-center mt-24">
+    <div class="fixed inset-0 bg-black opacity-50"></div> <!-- Fundo escurecido -->
+    <div class="relative max-w-md mx-auto rounded-lg">
+        <!-- Modal content -->
+        <div class="relative bg-principal rounded-lg shadow">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-5">
+                <h3 class="text-xl font-medium text-white">
+                    WiseTech
+                </h3>
+                <button type="button" class="text-white bg-transparent hover:bg-gray-200 hover:text-principal rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center" data-modal-hide="small-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only"></span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-6 space-y-6">
+                <p class="text-base leading-relaxed text-white">
+                    Senha atual incorreta!
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+    
+    <script>
+    // Função para fechar o modal
+    function closeModal(modalId) {
+        var modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // Escuta o evento de clique no botão "Close modal"
+    var closeButton = document.querySelector('[data-modal-hide="small-modal"]');
+    if (closeButton) {
+        closeButton.addEventListener("click", function () {
+            closeModal("small-modal");
+        });
+    }
+</script>
+
+
+</body>
+</html>
