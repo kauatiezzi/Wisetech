@@ -21,7 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: ../admin.php");
         exit();
     } else {
-        echo "Login falhou. Verifique suas credenciais.";
+        $_SESSION['login_incorreta'] = true;
+        header("Location: ./login.php");
     }
 }
 

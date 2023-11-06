@@ -1,3 +1,25 @@
+<?php
+session_start();
+
+include('../db_conexao/db_connect.php'); // Inclui o arquivo de conexão
+
+if (isset($_SESSION['login_incorreta']) && $_SESSION['login_incorreta'] === true) {
+    // Mostra o modal de confirmação
+    echo '<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const modal = document.getElementById("small-modal");
+            if (modal) {
+                modal.classList.remove("hidden");
+            }
+        });
+    </script>';
+    
+    // Limpa a variável de sessão após mostrar o modal
+    $_SESSION['login_incorreta'] = false;
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -162,6 +184,50 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
 
+<div id="small-modal" tabindex="-1" class="fixed inset-0 z-50 hidden overflow-x-hidden overflow-y-auto modal-center mt-24">
+    <div class="fixed inset-0 bg-black opacity-50"></div> <!-- Fundo escurecido -->
+    <div class="relative max-w-md mx-auto rounded-lg">
+        <!-- Modal content -->
+        <div class="relative bg-principal rounded-lg shadow">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-5">
+                <h3 class="text-xl font-medium text-white">
+                    WiseTech
+                </h3>
+                <button type="button" class="text-white bg-transparent hover:bg-gray-200 hover:text-principal rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center" data-modal-hide="small-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only"></span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-6 space-y-6">
+                <p class="text-base leading-relaxed text-white">
+                    Login incorreto, verifique suas informações e tente novamente!
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <script>
+    // Função para fechar o modal
+    function closeModal(modalId) {
+        var modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // Escuta o evento de clique no botão "Close modal"
+    var closeButton = document.querySelector('[data-modal-hide="small-modal"]');
+    if (closeButton) {
+        closeButton.addEventListener("click", function () {
+            closeModal("small-modal");
+        });
+    }
+</script>
 
 </body>
 </html>
